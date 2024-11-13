@@ -110,7 +110,7 @@ pub mod helpers {
     }
 
     pub fn downgrade_gd<T: GodotClass>(gd: Gd<T>) -> Gd<WeakRef> {
-        global::weakref(gd.to_variant()).try_to().unwrap()
+        global::weakref(&gd.to_variant()).try_to().unwrap()
     }
 
     pub fn try_upgrade_gd<T: GodotClass>(gd: Gd<WeakRef>) -> Option<Gd<T>> {

@@ -64,7 +64,7 @@ impl TextureLibrary {
                 src.image.height() as _,
                 false,
                 format,
-                payload,
+                &payload,
             ) else {
                 godot_error!("Failed to create image from data!");
                 return;
@@ -82,9 +82,9 @@ impl TextureLibrary {
             let dst_pos = Vector2i::new(pos[0] as _, pos[1] as _);
 
             tex.gd_src_img
-                .blit_rect(src_image, Rect2i::new(Vector2i::ZERO, src_size), dst_pos);
+                .blit_rect(&src_image, Rect2i::new(Vector2i::ZERO, src_size), dst_pos);
         } else {
-            let Some(gd_tex) = classes::ImageTexture::create_from_image(src_image.clone()) else {
+            let Some(gd_tex) = classes::ImageTexture::create_from_image(&src_image) else {
                 godot_error!("Failed to create texture from image!");
                 return;
             };
@@ -140,7 +140,6 @@ pub(crate) struct EguiViewportBridge {
     canvas_items: Vec<Rid>,
 
     /// Cached ui scale
-    #[init(val = 1.0)]
     ui_scale_cache: f32,
 }
 
@@ -563,9 +562,9 @@ impl EguiViewportBridge {
                 .done();
 
             gd_rs
-                .canvas_item_add_triangle_array_ex(rid_item, indices, verts, cologd_rs)
+                .canvas_item_add_triangle_array_ex(rid_item, &indices, &verts, &cologd_rs)
                 .texture(texture.get_rid())
-                .uvs(uvs)
+                .uvs(&uvs)
                 .done();
 
             #[cfg(any())] // Clip rect vis for debugging purpose.

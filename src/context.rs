@@ -23,9 +23,7 @@ use godot::{
         self,
         control::{LayoutPreset, MouseFilter},
         window, CanvasLayer, Control, DisplayServer, ICanvasLayer, WeakRef,
-    },
-    global,
-    prelude::*,
+    }, global, prelude::*
 };
 use tap::prelude::{Pipe, Tap};
 use with_drop::with_drop;
@@ -570,7 +568,7 @@ impl EguiBridge {
         self.try_initiate();
 
         // Register immediate renderer for this frame.
-        let w_self = global::weakref(self.to_gd().to_variant());
+        let w_self = global::weakref(&self.to_gd().to_variant());
 
         // TODO: Make this not to capture anything; instead let it retrieve required data
         // from `ctx`
@@ -1084,8 +1082,8 @@ impl EguiBridge {
 
             let tx = self.tx_bg_task.borrow().clone().unwrap();
             gd_painter.connect(
-                "resized".into(),
-                Callable::from_fn("Resize", move |_| {
+                "resized",
+                &Callable::from_fn("Resize", move |_| {
                     // Send repaint request to background worker. Here we don't directly
                     // call `Context::request_repaint` method on context object to prevent
                     // deadlock, as we're not sure when this bound method is called. (it
@@ -1097,8 +1095,8 @@ impl EguiBridge {
 
             let gd_wnd = if id == ViewportId::ROOT {
                 // Attach directly to this component.
-                self.to_gd().add_child(gd_painter.clone());
-                gd_painter.set_owner(self.to_gd());
+                self.to_gd().add_child(&gd_painter.clone());
+                gd_painter.set_owner(&self.to_gd());
 
                 // NOTE: For root viewport...
                 //
@@ -1134,17 +1132,17 @@ impl EguiBridge {
                 // Spawn additional window to hold painter.
                 let mut gd_wnd = classes::Window::new_alloc();
 
-                self.to_gd().add_child(gd_wnd.clone());
-                gd_wnd.set_owner(self.to_gd());
+                self.to_gd().add_child(&gd_wnd.clone());
+                gd_wnd.set_owner(&self.to_gd());
 
-                gd_wnd.add_child(gd_painter.clone());
-                gd_painter.set_owner(gd_wnd.clone());
+                gd_wnd.add_child(&gd_painter.clone());
+                gd_painter.set_owner(&gd_wnd.clone());
 
                 // Bind window close request.
                 let close_req = viewport.close_request.clone();
                 gd_wnd.connect(
-                    "close_requested".into(),
-                    Callable::from_fn("SubscribeClose", move |_| {
+                    "close_requested",
+                    &Callable::from_fn("SubscribeClose", move |_| {
                         close_req.store(VIEWPORT_CLOSE_REQUESTED, Relaxed);
                         Ok(Variant::nil())
                     }),
@@ -1209,7 +1207,7 @@ impl EguiBridge {
                     viewport.close_request.store(VIEWPORT_CLOSE_NONE, Relaxed);
                 }
                 Title(new_title) => {
-                    window.set_title(new_title.into());
+                    window.set_title(&new_title);
                 }
                 Transparent(transparent) => {
                     window.set_transparent_background(transparent);
@@ -1449,7 +1447,7 @@ impl EguiBridge {
             }
 
             if !copied_text.is_empty() {
-                ds.clipboard_set(copied_text.into());
+                ds.clipboard_set(&copied_text);
             }
 
             if mutable_text_under_cursor {
@@ -1494,7 +1492,7 @@ impl EguiBridge {
         }
 
         self.to_gd().call_deferred(
-            symbol_string!(Self, __internal_try_start_frame_inner).into(),
+            symbol_string!(Self, __internal_try_start_frame_inner),
             &[],
         );
     }
