@@ -11,7 +11,7 @@ name = "gdext_egui_example"
 path = "lib.rs"
 
 [dependencies]
-godot = { git = "https://github.com/godot-rust/gdext", branch = "master" }
+godot = { git = "https://github.com/godot-rust/gdext", rev = "f40fa274644c4ed5458fbc5fd6d587d8a3b9e4e3" }
 gdext-egui = { path = "../.." }
 
 egui_demo_lib = { git = "https://github.com/emilk/egui.git", tag = "0.27.2" }
